@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AKFN 사진 공유 앱</title>
+    <title>파이썬 사진 공유 앱</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .image-card {
@@ -24,9 +24,24 @@
     </style>
 </head>
 <body>
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-primary" href="{{ url_for('index') }}">파이썬 사진 공유 앱</a>
+            <div class="d-flex">
+                {% if is_admin %}
+                    <span class="navbar-text me-3 text-success fw-bold">
+                        ✅ 관리자 모드
+                    </span>
+                    <a href="{{ url_for('admin_login') }}" class="btn btn-sm btn-outline-danger">권한 해제</a>
+                {% else %}
+                    <a href="{{ url_for('admin_login') }}" class="btn btn-sm btn-primary">관리자 인증</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
     <div class="container mt-5">
-        <h1 class="mb-4 text-center text-primary">AKFN 사진 공유 앱 📸</h1>
-
+        
         <form action="{{ url_for('search') }}" method="GET" class="mb-5 p-3 bg-light rounded shadow-sm">
             <h5 class="mb-3">이미지 태그 검색</h5>
             <div class="input-group">
@@ -63,11 +78,17 @@
                 <div class="image-card">
                     <img src="{{ url_for('uploaded_file', filename=image.filename) }}" alt="{{ image.filename }}" class="img-fluid">
                     <div class="p-3">
-                        <div class="tags-area">
+                        <div class="tags-area mb-2">
                             {% for tag in image.tags %}
                                 <span class="badge bg-info text-dark">{{ tag.name }}</span>
                             {% endfor %}
                         </div>
+
+                        {% if is_admin %}
+                            <form action="{{ url_for('delete_image', image_id=image.id) }}" method="POST" onsubmit="return confirm('정말로 이 이미지를 삭제하시겠습니까?');">
+                                <button type="submit" class="btn btn-danger btn-sm w-100 mt-2">사진 삭제</button>
+                            </form>
+                        {% endif %}
                     </div>
                 </div>
             </div>
